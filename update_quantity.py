@@ -5,7 +5,8 @@ import sqlite3
 df = pd.read_csv("binventory.csv")
 
 # Ensure numeric types and handle missing values
-df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce").fillna(0).astype(int)
+df["quantity"] = pd.to_numeric(df["quantity"], 
+                            errors="coerce").fillna(0).astype(int)
 df["id"] = pd.to_numeric(df["id"], errors="coerce")
 # Drop rows without a valid id
 df = df.dropna(subset=["id"]).copy()
