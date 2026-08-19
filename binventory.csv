@@ -1,0 +1,1000 @@
+id,item,quantity,category,buying_price,selling_price
+1,Fenari 1L,2,Insecticide,3600,4000
+2,Fenari 500ml,4,Insecticide,1968,2100
+3,Fenari 250ml,0,Insecticide,1044,1200
+4,Fenari 100ml,15,Insecticide,435,550
+5,Fenari 50ml,10,Insecticide,260,350
+6,Herole plus 1L,1,Insecticide,3458,3800
+7,Herole plus 500ml,2,Insecticide,1862,2100
+8,Herole plus 100ml,0,Insecticide,405,550
+9,Herole plus 50ml,3,Insecticide,220,350
+10,Hitman 1L,1,Insecticide,3500,4000
+11,Hitman 500ML,4,Insecticide,1775,2100
+12,Hitman 250ML,3,Insecticide,930,1150
+13,Hitman 100ML,6,Insecticide,423,550
+14,Hitman 50ML,5,Insecticide,275,350
+15,Omite 1l,1,Insecticide,3000,3200
+16,Omite 500ml,2,Insecticide,1900,2200
+17,Omite 250ml,1,Insecticide,1100,1300
+18,Omite 50ml,3,Insecticide,300,350
+19,Omite 100ml,3,Insecticide,500,600
+20,Abamite 1l,1,Insecticide,1420,1600
+21,Abamite 500ml,3,Insecticide,750,900
+22,Abamite 100ml,3,Insecticide,242,350
+23,Abamite 50ml,4,Insecticide,121,200
+24,Absolute 1l,1,Fungicide,6370,6800
+25,Absolute 250ml,2,Fungicide,1620,1850
+26,Absolute 100ml,9,Fungicide,670,750
+27,Absolute 50ml,8,Fungicide,350,400
+28,Kmec 1l,1,Insecticide,1545,1800
+29,Kmec 500ml,3,Insecticide,1005,1200
+30,Kmec 250ml,2,Insecticide,532,650
+31,Kmec 100ml,8,Insecticide,260,350
+32,kmec 50ml,23,Insecticide,165,250
+33,Segatron 1,3,Insecticide,557,700
+34,Segatron 500ml,3,Insecticide,340,400
+35,segatron 100ml,5,Insecticide,79,150
+36,sensor 1l,2,Insecticide,3400,3900
+37,sensor 500ml,2,Insecticide,1855,2100
+38,sensor 250ml,4,Insecticide,1007,1200
+39,sensor 100ml,9,Insecticide,440,550
+40,sensor 50ml,9,Insecticide,260,350
+41,Prosper 1l,1,Insecticide,1800,2000
+42,Prosper 500ml,2,Insecticide,950,1200
+43,Prosper 250ml,2,Insecticide,500,650
+44,Prosper 90ml,2,Insecticide,220,300
+45,Cyclotron 1l,1,Insecticide,2194,2400
+46,Cyclotron 500ml,2,Insecticide,1148,1250
+47,Cyclotron 250ml,1,Insecticide,620,750
+48,Cyclotron 100ml,6,Insecticide,268,350
+49,Cyclotron 50ml,4,Insecticide,134,200
+50,Duduclear 1l,1,Insecticide,3500,4000
+51,Duduclear 500ml,1,Insecticide,1850,2200
+52,Duduclear 250ml,2,Insecticide,1000,1150
+53,Duduclear 100ml,8,Insecticide,400,550
+54,Duduclear 50ml,10,Insecticide,250,350
+55,Halothrin 1l,1,Insecticide,1032,1200
+56,Halothrin 500ml,3,Insecticide,516,650
+57,Halothrin 250ml,2,Insecticide,278,350
+58,Halothrin 100ml,4,Insecticide,150,250
+59,Halothrin 50ml,8,Insecticide,88,150
+60,Dildone 1l,2,Insecticide,3400,3700
+61,Dildone 250ml,4,Insecticide,1000,1200
+62,Dildone 100ml,6,Insecticide,425,550
+63,Dildone 50ml,7,Insecticide,235,350
+64,Carzal 1l,1,Fungicide,2200,2600
+65,Tabibu 500ml,5,Fungicide,1240,1400
+66,Tabibu 250ml,2,Fungicide,702,850
+67,Tabibu 100ml,11,Fungicide,290,400
+68,Tabibu 50ml,25,Fungicide,165,250
+69,klassic 1l,3,Fungicide,2421,2600
+70,klassic 500ml,2,Fungicide,1254,1400
+71,klassic 250ml,0,Fungicide,580,700
+72,klassic 100ml,8,Fungicide,262,300
+73,klassic  50ml,5,Fungicide,150,200
+74,Microthiol 1kg,2,Fungicide,515,650
+75,Microthiol 500g,4,Fungicide,275,350
+76,Manlaxyl 50g,3,Fungicide,120,250
+77,Ridomil 1kg,0,Fungicide,2420,2600
+78,Ridomil 250g,0,Fungicide,725,900
+79,Ridomil 50g,2,Fungicide,165,250
+80,Mistress  1kg,1,Fungicide,1451,1650
+81,Mistress  500g,2,Fungicide,751,900
+82,Mistress  240g,2,Fungicide,428,500
+83,Mistress  120g,2,Fungicide,246,350
+84,Mistress  40g,0,Fungicide,116,150
+85,Green cop 1kg,2,Fungicide,1450,1700
+86,Green cop 500g,0,Fungicide,823,950
+87,Wetsulf 1 kg ,2,Fungicide,309,400
+88,Wetsulf 500g,5,Fungicide,189,250
+89,Strobin extra 100ml,3,Fungicide,422,550
+90,Chariot 250ml,2,Fungicide,529,650
+91,Chariot 100ml,3,Fungicide,215,300
+92,Chariot 50ml,0,Fungicide,153,200
+93,Pyracop 100ml,1,Fungicide,366,450
+94,Pyracop 50ml,2,Fungicide,204,250
+95,Pyracop 250ml,1,Fungicide,853,1000
+96,azakon 100ml,0,Fungicide,593,650
+97,Azakon 50ml,2,Fungicide,323,350
+98,Topwonder 100ml,5,Fungicide,207,250
+99,Topwonder 50ml,5,Fungicide,110,150
+100,Topguard 100ml,4,Fungicide,175,250
+101,Topguard 50ml,1,Fungicide,95,150
+102,Topnet 100ml,3,Fungicide,185,250
+103,Pearl 200ml,1,Fungicide,403,500
+104,pearl 100ml,3,Fungicide,223,300
+105,Airforce 1 500ml,2,Insecticide,780,950
+106,Airforce 1 1L,0,Insecticide,1505,1800
+107,Airforce 1 250ml,0,Insecticide,425,550
+108,Airforce 1 100ml,3,Insecticide,175,250
+109,Profile 500ml,6,Insecticide,1274,1400
+110,Blazer 500ml,1,Insecticide,1566,1750
+111,Genomite 1l,0,Insecticide,1935,2100
+112,Genomite 500ml,3,Insecticide,994,1200
+113,Genomite 250ml,2,Insecticide,530,650
+114,Genomite 100ml,3,Insecticide,230,300
+115,Alpha degree 1l,0,Insecticide,1782,2000
+116,Alpha degree 500ml,3,Insecticide,950,1200
+117,Alpha degree 250ml,2,Insecticide,526,650
+118,Alpha degree 100ml,11,Insecticide,240,300
+119,Alpha degree 50ml,12,Insecticide,128,200
+120,Emaguard 250ml,3,Insecticide,1063,1200
+121,Emaguard 100ml,2,Insecticide,577,650
+122,Emaguard 50ml,4,Insecticide,294,400
+123,Emaguard 25ml,4,Insecticide,180,250
+124,Profen 200ml,2,Insecticide,891,1100
+125,Profen 100ml,4,Insecticide,460,550
+126,Profen 50ml,4,Insecticide,255,350
+127,Lancer 200ml,1,Insecticide,505,650
+128,Lancer 100ml,2,Insecticide,270,350
+129,lancer 50ml,2,Insecticide,154,200
+130,Profile 1L,0,Insecticide,2455,2600
+131,Profile 250ml,1,Insecticide,670,800
+132,Profile 100ml,0,Insecticide,274,350
+133,Bentil 250ml,3,Insecticide,700,850
+134,Bentil 100ml,16,Insecticide,297,350
+135,Bentil 50ml,17,Insecticide,155,200
+136,Emerald 100ml,4,Insecticide,326,450
+137,Emerald 50ml,5,Insecticide,177,250
+138,Capture 250ml,2,Insecticide,1080,1200
+139,Pradoceto 250ml,1,Insecticide,511,650
+140,Pradoceto 100ml,0,Insecticide,235,300
+141,Pradoceto 500ml,0,Insecticide,990,1200
+142,Pradoceto 1l,1,Insecticide,1850,2100
+143,Climb 100ml,0,Insecticide,239,350
+144,Climb 50ml,4,Insecticide,134,200
+145,Climb 30ml,3,Insecticide,88,150
+146,Bestox 100ml,10,Insecticide,229,350
+147,Bestox 50ml,1,Insecticide,145,200
+148,mitekill 100ml,2,Insecticide,255,350
+149,mitekill 50ml,2,Insecticide,145,200
+150,Campostella 50ml,1,Insecticide,335,400
+151,Campostella 100ml,2,Insecticide,605,700
+152,Campostella 25ml,3,Insecticide,196,250
+153,Five star 100ml,2,Fungicide,420,550
+154,Five star ,3,Fungicide,230,350
+155,caretaker 100ml,2,Fungicide,355,450
+156,caretaker 250ml,1,Fungicide,750,900
+157,password 10g,61,Insecticide,70,100
+158,password 50g,33,Insecticide,297,350
+159,Shotgun 10g,56,Insecticide,55,80
+160,Shotgun 20g,64,Insecticide,100,150
+161,Shotgun 100g,13,Insecticide,480,550
+162,Dynamo 10g,25,Insecticide,70,100
+163,Dynamo 50g,46,Insecticide,300,350
+164,Vectoclor 25ml,5,Acaricide,150,200
+165,Vectoclor 50ml,5,Acaricide,294,350
+166,Vectoclor 100ml,4,Acaricide,572,650
+167,Duodip 20ml,10,Acaricide,157,200
+168,Duodip 50ml,5,Acaricide,372,450
+169,Duodip 100ml,4,Acaricide,591,700
+170,Tikdip 10ml,12,Acaricide,60,100
+171,Tikdip 20ml,7,Acaricide,105,150
+172,Tikdip 40ml,7,Acaricide,185,250
+173,Tikdip 100ml,8,Acaricide,350,450
+174,Notix 20ml,7,Acaricide,95,150
+175,Notix 40ml,5,Acaricide,165,250
+176,Notix 100ml,4,Acaricide,322,450
+177,Triatix 20ml,2,Acaricide,95,150
+178,Triatix 40ml,3,Acaricide,140,250
+179,Triatix 100ml,2,Acaricide,305,400
+180,Grenade 20ml,6,Acaricide,110,150
+181,Grenade 40ml,4,Acaricide,185,250
+182,Grenade 100ml,2,Acaricide,360,450
+183,Eliminator 20ml,13,Acaricide,100,150
+184,Delete 20ml,6,Acaricide,178,250
+185,Delete 40ml,5,Acaricide,308,350
+186,Bedlam 15ml,7,Insecticide,100,150
+187,Bedlam 50ml,4,Insecticide,243,350
+188,Bedlam 100ml,3,Insecticide,430,550
+189,Kungunil 10ml,5,Insecticide,108,150
+190,Kungunil 50ml,2,Insecticide,310,450
+191,Kungunil 100ml,3,Insecticide,532,650
+192,Pabanna 10g,5,Insecticide,100,150
+193,Neocidol 28ml,1,Insecticide,142,200
+194,Gradometer 50ml,5,miticide,130,200
+195,Gradometer 100ml,6,miticide,210,300
+196,Gradometer 500ml,1,miticide,935,1200
+197,Gradometer 1l,1,miticide,1725,2000
+198,undertaker 50ml,5,miticide,135,200
+199,Undertaker 100ml,1,miticide,230,300
+200,Undertaker 250ml,0,miticide,453,600
+201,Pio starter 5kg,4,Feeds,375,450
+202,Pio starter 10kg,4,Feeds,740,850
+203,Pio starter 20kg,0,Feeds,1465,1650
+204,Pio starter 50kg,0,Feeds,3600,3800
+205,Pio starter 70kg,2,Feeds,5000,5200
+206,Pio Layers 5kg,4,Feeds,360,450
+207,Pio Layers 10kg,4,Feeds,705,800
+208,Pio layers 20kg,3,Feeds,1370,1450
+209,Pio layers 70kg,1,Feeds,4600,4800
+210,Pio Growers 5kg,5,Feeds,315,400
+211,Pio Growers 10kg,4,Feeds,590,750
+212,Pio Growers 20kg,1,Feeds,1135,1300
+213,Pio Growers 70kg,1,Feeds,3850,4100
+214,Pio Kienyeji 5kg,6,Feeds,240,300
+215,Pio Kienyeji 10kg,4,Feeds,440,550
+216,Pio Kienyeji 20kg,1,Feeds,820,950
+217,Pio Kienyeji 70kg,1,Feeds,2700,2900
+218,Pio Dairy 5kg,4,Feeds,245,300
+219,Pio Dairy 10kg,4,Feeds,460,550
+220,Pio Dairy 20kg,2,Feeds,850,950
+221,Pio Dairy 70kg,1,Feeds,2850,3200
+222,Egocin 10% 50ml,6,Injectables,115,150
+223,Egocin 10% 100ml,6,Injectables,151,250
+224,Egocin 20% LA 50ml,3,Injectables,127,250
+225,Egocin 20% LA 100ml,3,Injectables,251,350
+226,Oxymet 10% 50ml,6,Injectables,94,150
+227,Oxymet 10% 100ml,7,Injectables,126,250
+228,Tylosin 50ml,6,Injectables,232,350
+229,Tylosin 100ml,5,Injectables,381,550
+230,Penstrep 50ml,5,Injectables,242,350
+231,Penstrep 100ml,5,Injectables,387,550
+232,Supermec 10ml,29,Injectables,71,100
+233,Supermec 50ml,5,Injectables,319,400
+234,Supermec 100ml,3,Injectables,553,650
+235,Vitaboost 50ml,5,Injectables,99,150
+236,Vitaboost 100ml,6,Injectables,121,250
+237,Albendazole 10% 40ml,1,Dewormer,70,100
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
