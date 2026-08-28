@@ -1,6 +1,8 @@
 CREATE TABLE purchase_receipts (
     receipt_id INTEGER PRIMARY KEY AUTOINCREMENT, supplier TEXT NOT NULL, purchase_date DATE NOT NULL, total_amount REAL NOT NULL
-);
+        FOREIGN KEY (supplier_id)
+        REFERENCES suppliers(id)
+    );
 
 CREATE TABLE purchase_items (
     item_id INTEGER PRIMARY KEY AUTOINCREMENT,
