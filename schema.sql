@@ -13,5 +13,8 @@ CREATE TABLE purchase_items (
     total_cost REAL NOT NULL,
 
     FOREIGN KEY (receipt_id)
-        REFERENCES purchase_receipts(receipt_id)
+    REFERENCES purchase_receipts(receipt_id)
+
+    FOREIGN KEY (inventory_id)
+    REFERENCES inventory(id)
 );
