@@ -238,7 +238,9 @@ id,item,quantity,category,buying_price,selling_price
 237,Albendazole 10% 40ml,1,Dewormer,70,100
 238,Aliseryl 30g,8,Poultry,205,250
 239,superskajicycline 30g,12,Poultry,91,150
-240, Piperazine 30g,11,Poultry.64,100
+240, Piperazine 30g,11,Poultry,64,100
+241,Broiler booster 30g,2,Poultry,45,100
+
 
 
 ,,,,,
