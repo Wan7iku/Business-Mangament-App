@@ -253,8 +253,16 @@ id,item,quantity,category,buying_price,selling_price
 262,Bentil 1l,2,Insecticide,2620,2800
 263,DK777 2KG,12,Seeds,692,850
 264,DUMA43 2KG,12,Seeds,710,900
-265,Epic star 50ml, Insecticide,280,350
-266,Epic star 100ml,Insecticide,413,550
+265,Epic star 50ml,5,Insecticide,280,350
+266,Epic star 100ml,5,Insecticide,413,550
+267,Tingatinga Top 1L,6, Herbicide,1500,1700
+268,Tingatinga top 500ml,2,Herbicide,814,950
+269,Weedal 1l,10,Herbicide,480,600
+270,Weedal 500ml,9,Herbicide,315,450
+271,Weedal 200ml,5,Herbicide,170,250
+272,Paraster 1l,11,Herbicide,600,750
+273,Paraster 500ml,2,Herbicide,426,550
+
 
 
 
