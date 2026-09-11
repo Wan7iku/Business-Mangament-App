@@ -25,7 +25,9 @@ selected_supplier = st.selectbox(
     "Supplier",
     options=list(supplier_options.keys())
 )
-
+purchase_date = st.date_input(
+    "Purchase date"
+)
 if selected_supplier:
     supplier_id = supplier_options[selected_supplier]
     st.write("Selected supplier ID:", supplier_id)
