@@ -69,4 +69,22 @@ if search_term:
         st.write("Selected:", selected_item)
     else:
         st.warning("No matching inventory items found.")
+quantity_purchased = st.number_input(
+    "Quantity purchased",
+    min_value=1,
+    step=1
+)
+
+unit_cost = st.number_input(
+    "Unit buying price",
+    min_value=0.0,
+    step=0.01
+)
+
+total_cost = quantity_purchased * unit_cost
+
+st.write(f"Total cost: KSh {total_cost:,.2f}")
+
+
+        
 conn.close()
