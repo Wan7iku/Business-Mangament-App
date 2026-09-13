@@ -5,6 +5,9 @@ st.title("Business Management App")
 
 conn = get_connection()
 
+if "purchase_items" not in st.session_state:
+    st.session_state.purchase_items = []
+
 # Get suppliers from database
 suppliers = conn.execute(
     """
@@ -84,7 +87,12 @@ unit_cost = st.number_input(
 total_cost = quantity_purchased * unit_cost
 
 st.write(f"Total cost: KSh {total_cost:,.2f}")
-
-
-        
+if st.button("Add Item"):
+    st.session_state.purchase_items.append({
+        "inventory_id": inventory_id,
+        "item": selected_item,
+        "quantity": quantity_purchased,
+        "unit_cost": unit_cost,
+        "total_cost": total_cost
+    })      
 conn.close()
