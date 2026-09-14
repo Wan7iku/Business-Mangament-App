@@ -94,5 +94,24 @@ if st.button("Add Item"):
         "quantity": quantity_purchased,
         "unit_cost": unit_cost,
         "total_cost": total_cost
-    })      
+    })    
+if st.session_state.purchase_items:
+    st.subheader("Items on this receipt")
+
+    for item in st.session_state.purchase_items:
+        st.write(
+            f"{item['item']} | "
+            f"Qty: {item['quantity']} | "
+            f"Unit cost: KSh {item['unit_cost']:,.2f} | "
+            f"Total: KSh {item['total_cost']:,.2f}"
+        )
+
+    receipt_total = sum(
+        item["total_cost"]
+        for item in st.session_state.purchase_items
+    )
+
+    st.subheader(
+        f"Receipt Total: KSh {receipt_total:,.2f}"
+    )  
 conn.close()
