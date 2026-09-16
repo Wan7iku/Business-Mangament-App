@@ -202,4 +202,31 @@ if st.session_state.purchase_items:
             st.error(
                 f"Could not save receipt: {e}"
             )
+st.header("Purchase History")
+
+purchases = conn.execute(
+    """
+    SELECT
+        pr.receipt_id,
+        s.name AS supplier,
+        pr.purchase_date,
+        pr.total_amount
+    FROM purchase_receipts pr
+    JOIN suppliers s
+        ON pr.supplier_id = s.supplier_id
+    ORDER BY pr.purchase_date DESC, pr.receipt_id DESC
+    """
+).fetchall()
+
+if purchases:
+    for purchase in purchases:
+        st.write(
+            f"Receipt #{purchase['receipt_id']} | "
+            f"Supplier: {purchase['supplier']} | "
+            f"Date: {purchase['purchase_date']} | "
+            f"Total: KSh {purchase['total_amount']:,.2f}"
+        )
+else:
+    st.info("No purchases have been recorded yet.")
+
 conn.close()
