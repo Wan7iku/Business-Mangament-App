@@ -114,4 +114,92 @@ if st.session_state.purchase_items:
     st.subheader(
         f"Receipt Total: KSh {receipt_total:,.2f}"
     )  
+if st.session_state.purchase_items:
+
+    receipt_total = sum(
+        item["total_cost"]
+        for item in st.session_state.purchase_items
+    )
+
+    st.subheader(
+        f"Receipt Total: KSh {receipt_total:,.2f}"
+    )
+
+    if st.button("Save Receipt"):
+
+        try:
+            # Start database transaction
+            conn.execute("BEGIN")
+
+            # 1. Create the purchase receipt
+            cursor = conn.execute(
+                """
+                INSERT INTO purchase_receipts
+                (supplier_id, purchase_date, total_amount)
+                VALUES (?, ?, ?)
+                """,
+                (
+                    supplier_options[selected_supplier],
+                    purchase_date,
+                    receipt_total
+                )
+            )
+
+            # Get the newly created receipt ID
+            receipt_id = cursor.lastrowid
+
+            # 2. Save each purchased item
+            for item in st.session_state.purchase_items:
+
+                conn.execute(
+                    """
+                    INSERT INTO purchase_items
+                    (
+                        receipt_id,
+                        inventory_id,
+                        quantity_purchased,
+                        unit_cost,
+                        total_cost
+                    )
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (
+                        receipt_id,
+                        item["inventory_id"],
+                        item["quantity"],
+                        item["unit_cost"],
+                        item["total_cost"]
+                    )
+                )
+
+                # 3. Increase inventory quantity
+                conn.execute(
+                    """
+                    UPDATE inventory
+                    SET quantity = COALESCE(quantity, 0) + ?
+                    WHERE id = ?
+                    """,
+                    (
+                        item["quantity"],
+                        item["inventory_id"]
+                    )
+                )
+
+            # Save everything
+            conn.commit()
+
+            st.success(
+                f"Receipt #{receipt_id} saved successfully!"
+            )
+
+            # Clear the temporary purchase
+            st.session_state.purchase_items = []
+
+        except Exception as e:
+            # Undo everything if something goes wrong
+            conn.rollback()
+
+            st.error(
+                f"Could not save receipt: {e}"
+            )
 conn.close()
