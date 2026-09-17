@@ -202,6 +202,8 @@ if st.session_state.purchase_items:
             st.error(
                 f"Could not save receipt: {e}"
             )
+
+
 st.header("Purchase History")
 
 purchases = conn.execute(
@@ -219,13 +221,39 @@ purchases = conn.execute(
 ).fetchall()
 
 if purchases:
+
     for purchase in purchases:
-        st.write(
+
+        with st.expander(
             f"Receipt #{purchase['receipt_id']} | "
-            f"Supplier: {purchase['supplier']} | "
-            f"Date: {purchase['purchase_date']} | "
-            f"Total: KSh {purchase['total_amount']:,.2f}"
-        )
+            f"{purchase['supplier']} | "
+            f"{purchase['purchase_date']} | "
+            f"KSh {purchase['total_amount']:,.2f}"
+        ):
+
+            items = conn.execute(
+                """
+                SELECT
+                    i.item,
+                    pi.quantity_purchased,
+                    pi.unit_cost,
+                    pi.total_cost
+                FROM purchase_items pi
+                JOIN inventory i
+                    ON pi.inventory_id = i.id
+                WHERE pi.receipt_id = ?
+                """,
+                (purchase["receipt_id"],)
+            ).fetchall()
+
+            for item in items:
+                st.write(
+                    f"**{item['item']}** | "
+                    f"Qty: {item['quantity_purchased']} | "
+                    f"Unit cost: KSh {item['unit_cost']:,.2f} | "
+                    f"Total: KSh {item['total_cost']:,.2f}"
+                )
+
 else:
     st.info("No purchases have been recorded yet.")
 
