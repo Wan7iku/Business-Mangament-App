@@ -98,14 +98,27 @@ if st.button("Add Item"):
 if st.session_state.purchase_items:
     st.subheader("Items on this receipt")
 
-    for item in st.session_state.purchase_items:
-        st.write(
-            f"{item['item']} | "
-            f"Qty: {item['quantity']} | "
-            f"Unit cost: KSh {item['unit_cost']:,.2f} | "
-            f"Total: KSh {item['total_cost']:,.2f}"
-        )
+    for item in items:
 
+     st.write(f"**{item['item']}**")
+
+     new_quantity = st.number_input(
+        "Quantity",
+        min_value=1,
+        value=item["quantity_purchased"],
+        step=1,
+        key=f"qty_{purchase['receipt_id']}_{item['item']}"
+     )
+
+     st.write(
+        f"Unit cost: KSh {item['unit_cost']:,.2f}"
+     )
+
+     new_total = new_quantity * item["unit_cost"]
+
+     st.write(
+        f"New total: KSh {new_total:,.2f}"
+     )
     receipt_total = sum(
         item["total_cost"]
         for item in st.session_state.purchase_items
