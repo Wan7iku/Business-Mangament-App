@@ -266,7 +266,92 @@ if purchases:
                     f"Unit cost: KSh {item['unit_cost']:,.2f} | "
                     f"Total: KSh {item['total_cost']:,.2f}"
                 )
+            if st.button(
+    "Save Changes",
+    key=f"save_{purchase['receipt_id']}_{item['item']}"
+):
 
+    old_quantity = item["quantity_purchased"]
+
+    quantity_difference = new_quantity - old_quantity
+
+    try:
+        # Start transaction
+        conn.execute("BEGIN")
+
+        # 1. Update the purchased quantity
+        conn.execute(
+            """
+            UPDATE purchase_items
+            SET quantity_purchased = ?,
+                total_cost = ?
+            WHERE receipt_id = ?
+              AND inventory_id = (
+                  SELECT id
+                  FROM inventory
+                  WHERE item = ?
+              )
+            """,
+            (
+                new_quantity,
+                new_total,
+                purchase["receipt_id"],
+                item["item"]
+            )
+        )
+
+        # 2. Adjust inventory
+        conn.execute(
+            """
+            UPDATE inventory
+            SET quantity = COALESCE(quantity, 0) + ?
+            WHERE item = ?
+            """,
+            (
+                quantity_difference,
+                item["item"]
+            )
+        )
+
+        # 3. Recalculate the receipt total
+        new_receipt_total = conn.execute(
+            """
+            SELECT SUM(total_cost)
+            FROM purchase_items
+            WHERE receipt_id = ?
+            """,
+            (purchase["receipt_id"],)
+        ).fetchone()[0]
+
+        # 4. Update receipt total
+        conn.execute(
+            """
+            UPDATE purchase_receipts
+            SET total_amount = ?
+            WHERE receipt_id = ?
+            """,
+            (
+                new_receipt_total or 0,
+                purchase["receipt_id"]
+            )
+        )
+
+        # Save everything
+        conn.commit()
+
+        st.success(
+            f"Receipt #{purchase['receipt_id']} updated successfully!"
+        )
+
+        st.rerun()
+
+    except Exception as e:
+
+        conn.rollback()
+
+        st.error(
+            f"Could not update receipt: {e}"
+        )
 else:
     st.info("No purchases have been recorded yet.")
 
