@@ -247,6 +247,7 @@ if purchases:
             items = conn.execute(
                 """
                 SELECT
+                    i.id AS inventory_id,
                     i.item,
                     pi.quantity_purchased,
                     pi.unit_cost,
@@ -286,17 +287,13 @@ if purchases:
             SET quantity_purchased = ?,
                 total_cost = ?
             WHERE receipt_id = ?
-              AND inventory_id = (
-                  SELECT id
-                  FROM inventory
-                  WHERE item = ?
-              )
+              AND inventory_id = ?
             """,
             (
                 new_quantity,
                 new_total,
                 purchase["receipt_id"],
-                item["item"]
+                item["inventory_id"]
             )
         )
 
@@ -309,7 +306,7 @@ if purchases:
             """,
             (
                 quantity_difference,
-                item["item"]
+                item["inventory_id"]
             )
         )
 
