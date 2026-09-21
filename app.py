@@ -247,6 +247,7 @@ if purchases:
             items = conn.execute(
                 """
                 SELECT
+                    pi.purchase_item_id,
                     i.id AS inventory_id,
                     i.item,
                     pi.quantity_purchased,
@@ -286,14 +287,12 @@ if purchases:
             UPDATE purchase_items
             SET quantity_purchased = ?,
                 total_cost = ?
-            WHERE receipt_id = ?
-              AND inventory_id = ?
+            WHERE purchase_item_id = ?
             """,
             (
                 new_quantity,
                 new_total,
-                purchase["receipt_id"],
-                item["inventory_id"]
+                item["purchase_item_id"]
             )
         )
 
