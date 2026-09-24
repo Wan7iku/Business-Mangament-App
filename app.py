@@ -290,11 +290,13 @@ if purchases:
             """
             UPDATE purchase_items
             SET quantity_purchased = ?,
+                unit_cost = ?,
                 total_cost = ?
             WHERE purchase_item_id = ?
             """,
             (
                 new_quantity,
+                new_unit_cost,
                 new_total,
                 item["purchase_item_id"]
             )
