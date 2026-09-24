@@ -110,11 +110,15 @@ if st.session_state.purchase_items:
         key=f"qty_{purchase['receipt_id']}_{item['item']}"
      )
 
-     st.write(
-        f"Unit cost: KSh {item['unit_cost']:,.2f}"
+     new_unit_cost = st.number_input(
+       "Unit buying price",
+        min_value=0.0,
+        value=float(item["unit_cost"]),
+        step=0.01,
+        key=f"cost_{purchase['receipt_id']}_{item['purchase_item_id']}"
      )
 
-     new_total = new_quantity * item["unit_cost"]
+     new_total = new_quantity * new_unit_cost
 
      st.write(
         f"New total: KSh {new_total:,.2f}"
