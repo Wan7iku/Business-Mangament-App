@@ -275,6 +275,76 @@ if purchases:
             if st.button(
     "Save Changes",
     key=f"save_{purchase['receipt_id']}_{item['item']}"
+   
+    if st.button(
+    "Remove Item",
+    key=f"remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
+):
+
+    try:
+        conn.execute("BEGIN")
+
+        # 1. Remove the purchased quantity from inventory
+        conn.execute(
+            """
+            UPDATE inventory
+            SET quantity = COALESCE(quantity, 0) - ?
+            WHERE id = ?
+            """,
+            (
+                item["quantity_purchased"],
+                item["inventory_id"]
+            )
+        )
+
+        # 2. Delete the purchase line
+        conn.execute(
+            """
+            DELETE FROM purchase_items
+            WHERE purchase_item_id = ?
+            """,
+            (item["purchase_item_id"],)
+        )
+
+        # 3. Recalculate the receipt total
+        new_receipt_total = conn.execute(
+            """
+            SELECT SUM(total_cost)
+            FROM purchase_items
+            WHERE receipt_id = ?
+            """,
+            (purchase["receipt_id"],)
+        ).fetchone()[0]
+
+        # 4. Update the receipt total
+        conn.execute(
+            """
+            UPDATE purchase_receipts
+            SET total_amount = ?
+            WHERE receipt_id = ?
+            """,
+            (
+                new_receipt_total or 0,
+                purchase["receipt_id"]
+            )
+        )
+
+        conn.commit()
+
+        st.success(
+            f"{item['item']} removed from Receipt "
+            f"#{purchase['receipt_id']}."
+        )
+
+        st.rerun()
+
+    except Exception as e:
+
+        conn.rollback()
+
+        st.error(
+            f"Could not remove item: {e}"
+        )
 ):
 
     old_quantity = item["quantity_purchased"]
