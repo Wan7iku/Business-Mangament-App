@@ -276,10 +276,139 @@ if purchases:
     "Save Changes",
     key=f"save_{purchase['receipt_id']}_{item['item']}"
    
-    if st.button(
+    # Confirm before removing
+if st.button(
     "Remove Item",
     key=f"remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
 ):
+    st.session_state[
+        f"confirm_remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
+    ] = True
+
+
+if st.session_state.get(
+    f"confirm_remove_{purchase['receipt_id']}_{item['purchase_item_id']}",
+    False
+):
+
+    st.warning(
+        f"Remove {item['quantity_purchased']} × "
+        f"{item['item']} from this receipt?"
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button(
+            "Yes, remove",
+            key=f"confirm_yes_{purchase['receipt_id']}_{item['purchase_item_id']}"
+        ):
+
+            try:
+                # Check current inventory
+                current_stock = conn.execute(
+                    """
+                    SELECT quantity
+                    FROM inventory
+                    WHERE id = ?
+                    """,
+                    (item["inventory_id"],)
+                ).fetchone()
+
+                if current_stock is None:
+                    st.error("Inventory item no longer exists.")
+                    st.stop()
+
+                current_quantity = current_stock["quantity"] or 0
+
+                # Make sure we don't create negative stock
+                if current_quantity < item["quantity_purchased"]:
+                    st.error(
+                        f"Cannot remove this purchase because current "
+                        f"stock is only {current_quantity}, while this "
+                        f"receipt added {item['quantity_purchased']}."
+                    )
+                    st.stop()
+
+                # Start transaction
+                conn.execute("BEGIN")
+
+                # 1. Remove purchased quantity from inventory
+                conn.execute(
+                    """
+                    UPDATE inventory
+                    SET quantity = quantity - ?
+                    WHERE id = ?
+                    """,
+                    (
+                        item["quantity_purchased"],
+                        item["inventory_id"]
+                    )
+                )
+
+                # 2. Delete purchase line
+                conn.execute(
+                    """
+                    DELETE FROM purchase_items
+                    WHERE purchase_item_id = ?
+                    """,
+                    (item["purchase_item_id"],)
+                )
+
+                # 3. Recalculate receipt total
+                new_receipt_total = conn.execute(
+                    """
+                    SELECT SUM(total_cost)
+                    FROM purchase_items
+                    WHERE receipt_id = ?
+                    """,
+                    (purchase["receipt_id"],)
+                ).fetchone()[0]
+
+                # 4. Update receipt total
+                conn.execute(
+                    """
+                    UPDATE purchase_receipts
+                    SET total_amount = ?
+                    WHERE receipt_id = ?
+                    """,
+                    (
+                        new_receipt_total or 0,
+                        purchase["receipt_id"]
+                    )
+                )
+
+                conn.commit()
+
+                # Clear confirmation state
+                st.session_state[
+                    f"confirm_remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
+                ] = False
+
+                st.success(
+                    f"{item['item']} removed successfully."
+                )
+
+                st.rerun()
+
+            except Exception as e:
+
+                conn.rollback()
+
+                st.error(
+                    f"Could not remove item: {e}"
+                )
+
+    with col2:
+        if st.button(
+            "Cancel",
+            key=f"cancel_remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
+        ):
+            st.session_state[
+                f"confirm_remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
+            ] = False
+
+            st.rerun()
 
     try:
         conn.execute("BEGIN")
