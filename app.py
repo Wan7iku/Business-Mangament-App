@@ -574,6 +574,28 @@ inventory_items = conn.execute(
     ORDER BY item
     """
 ).fetchall()
+search_inventory = st.text_input(
+    "Search inventory",
+    placeholder="Type a product name..."
+)
+
+if search_inventory:
+
+    inventory_items = conn.execute(
+        """
+        SELECT
+            id,
+            item,
+            category,
+            buying_price,
+            selling_price,
+            quantity
+        FROM inventory
+        WHERE item LIKE ?
+        ORDER BY item
+        """,
+        (f"%{search_inventory}%",)
+    ).fetchall()
 
 if inventory_items:
 
