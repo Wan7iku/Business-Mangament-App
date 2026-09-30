@@ -559,5 +559,35 @@ if st.session_state.get(
         )
 else:
     st.info("No purchases have been recorded yet.")
+st.header("Inventory")
+
+inventory_items = conn.execute(
+    """
+    SELECT
+        id,
+        item,
+        category,
+        buying_price,
+        selling_price,
+        quantity
+    FROM inventory
+    ORDER BY item
+    """
+).fetchall()
+
+if inventory_items:
+
+    for item in inventory_items:
+
+        st.write(
+            f"**{item['item']}** | "
+            f"Category: {item['category'] or 'N/A'} | "
+            f"Stock: {item['quantity'] or 0} | "
+            f"Buying: KSh {item['buying_price']:,.2f} | "
+            f"Selling: KSh {item['selling_price']:,.2f}"
+        )
+
+else:
+    st.info("No inventory items found.")
 
 conn.close()
