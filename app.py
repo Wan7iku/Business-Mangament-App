@@ -612,4 +612,72 @@ if inventory_items:
 else:
     st.info("No inventory items found.")
 
+st.subheader("Add New Product")
+
+with st.form("add_product_form"):
+
+    new_item = st.text_input("Product name")
+
+    new_category = st.text_input("Category")
+
+    new_buying_price = st.number_input(
+        "Buying price (KSh)",
+        min_value=0.0,
+        step=0.01
+    )
+
+    new_selling_price = st.number_input(
+        "Selling price (KSh)",
+        min_value=0.0,
+        step=0.01
+    )
+
+    new_quantity = st.number_input(
+        "Opening stock quantity",
+        min_value=0,
+        step=1
+    )
+
+    submitted = st.form_submit_button("Add Product")
+
+    if submitted:
+
+        if not new_item.strip():
+            st.error("Please enter a product name.")
+
+        else:
+            try:
+                conn.execute(
+                    """
+                    INSERT INTO inventory
+                    (item, category, buying_price, selling_price, quantity)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (
+                        new_item.strip(),
+                        new_category.strip(),
+                        new_buying_price,
+                        new_selling_price,
+                        new_quantity
+                    )
+                )
+
+                conn.commit()
+
+                st.success(
+                    f"{new_item.strip()} added to inventory!"
+                )
+
+                st.rerun()
+
+            except Exception as e:
+                conn.rollback()
+
+                if "UNIQUE constraint failed" in str(e):
+                    st.error(
+                        "This product name already exists. "
+                        "Use a unique name, including package size if needed."
+                    )
+                else:
+                    st.error(f"Could not add product: {e}")
 conn.close()
