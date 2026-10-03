@@ -241,8 +241,10 @@ if purchases:
 
     for purchase in purchases:
 
+        receipt_id = purchase["receipt_id"]
+
         with st.expander(
-            f"Receipt #{purchase['receipt_id']} | "
+            f"Receipt #{receipt_id} | "
             f"{purchase['supplier']} | "
             f"{purchase['purchase_date']} | "
             f"KSh {purchase['total_amount']:,.2f}"
@@ -262,301 +264,389 @@ if purchases:
                     ON pi.inventory_id = i.id
                 WHERE pi.receipt_id = ?
                 """,
-                (purchase["receipt_id"],)
+                (receipt_id,)
             ).fetchall()
 
-            for item in items:
-                st.write(
-                    f"**{item['item']}** | "
-                    f"Qty: {item['quantity_purchased']} | "
-                    f"Unit cost: KSh {item['unit_cost']:,.2f} | "
-                    f"Total: KSh {item['total_cost']:,.2f}"
+            # Edit or remove existing receipt items
+            if items:
+
+                for item in items:
+
+                    item_id = item["purchase_item_id"]
+
+                    st.divider()
+                    st.write(f"**{item['item']}**")
+
+                    new_quantity = st.number_input(
+                        "Quantity",
+                        min_value=1,
+                        value=int(item["quantity_purchased"]),
+                        step=1,
+                        key=f"qty_{receipt_id}_{item_id}"
+                    )
+
+                    new_unit_cost = st.number_input(
+                        "Unit buying price (KSh)",
+                        min_value=0.0,
+                        value=float(item["unit_cost"]),
+                        step=0.01,
+                        key=f"cost_{receipt_id}_{item_id}"
+                    )
+
+                    new_total = new_quantity * new_unit_cost
+
+                    st.write(
+                        f"Updated line total: KSh {new_total:,.2f}"
+                    )
+
+                    if st.button(
+                        "Save Changes",
+                        key=f"save_{receipt_id}_{item_id}"
+                    ):
+
+                        old_quantity = item["quantity_purchased"]
+                        quantity_difference = (
+                            new_quantity - old_quantity
+                        )
+
+                        try:
+                            conn.execute("BEGIN")
+
+                            # Update the receipt line
+                            conn.execute(
+                                """
+                                UPDATE purchase_items
+                                SET quantity_purchased = ?,
+                                    unit_cost = ?,
+                                    total_cost = ?
+                                WHERE purchase_item_id = ?
+                                """,
+                                (
+                                    new_quantity,
+                                    new_unit_cost,
+                                    new_total,
+                                    item_id
+                                )
+                            )
+
+                            # Adjust stock by the quantity difference
+                            conn.execute(
+                                """
+                                UPDATE inventory
+                                SET quantity =
+                                    COALESCE(quantity, 0) + ?
+                                WHERE id = ?
+                                """,
+                                (
+                                    quantity_difference,
+                                    item["inventory_id"]
+                                )
+                            )
+
+                            # Recalculate the receipt total
+                            new_receipt_total = conn.execute(
+                                """
+                                SELECT SUM(total_cost)
+                                FROM purchase_items
+                                WHERE receipt_id = ?
+                                """,
+                                (receipt_id,)
+                            ).fetchone()[0]
+
+                            conn.execute(
+                                """
+                                UPDATE purchase_receipts
+                                SET total_amount = ?
+                                WHERE receipt_id = ?
+                                """,
+                                (
+                                    new_receipt_total or 0,
+                                    receipt_id
+                                )
+                            )
+
+                            conn.commit()
+
+                            st.success("Receipt item updated!")
+                            st.rerun()
+
+                        except Exception as e:
+                            conn.rollback()
+                            st.error(
+                                f"Could not update item: {e}"
+                            )
+
+                    # Remove item with confirmation
+                    confirm_key = f"confirm_remove_{receipt_id}_{item_id}"
+
+                    if st.button(
+                        "Remove Item",
+                        key=f"remove_{receipt_id}_{item_id}"
+                    ):
+                        st.session_state[confirm_key] = True
+
+                    if st.session_state.get(confirm_key, False):
+
+                        st.warning(
+                            f"Remove {item['quantity_purchased']} × "
+                            f"{item['item']} from this receipt?"
+                        )
+
+                        col1, col2 = st.columns(2)
+
+                        with col1:
+                            if st.button(
+                                "Yes, remove",
+                                key=f"yes_remove_{receipt_id}_{item_id}"
+                            ):
+
+                                try:
+                                    current_stock = conn.execute(
+                                        """
+                                        SELECT quantity
+                                        FROM inventory
+                                        WHERE id = ?
+                                        """,
+                                        (item["inventory_id"],)
+                                    ).fetchone()
+
+                                    if current_stock is None:
+                                        st.error(
+                                            "Inventory item not found."
+                                        )
+                                        st.stop()
+
+                                    current_quantity = (
+                                        current_stock["quantity"] or 0
+                                    )
+
+                                    if (
+                                        current_quantity
+                                        < item["quantity_purchased"]
+                                    ):
+                                        st.error(
+                                            "Cannot remove this line "
+                                            "because current stock is "
+                                            "lower than the quantity "
+                                            "recorded on this receipt."
+                                        )
+                                        st.stop()
+
+                                    conn.execute("BEGIN")
+
+                                    # Reverse the stock added by this line
+                                    conn.execute(
+                                        """
+                                        UPDATE inventory
+                                        SET quantity = quantity - ?
+                                        WHERE id = ?
+                                        """,
+                                        (
+                                            item["quantity_purchased"],
+                                            item["inventory_id"]
+                                        )
+                                    )
+
+                                    # Delete the receipt line
+                                    conn.execute(
+                                        """
+                                        DELETE FROM purchase_items
+                                        WHERE purchase_item_id = ?
+                                        """,
+                                        (item_id,)
+                                    )
+
+                                    # Recalculate receipt total
+                                    new_receipt_total = conn.execute(
+                                        """
+                                        SELECT SUM(total_cost)
+                                        FROM purchase_items
+                                        WHERE receipt_id = ?
+                                        """,
+                                        (receipt_id,)
+                                    ).fetchone()[0]
+
+                                    conn.execute(
+                                        """
+                                        UPDATE purchase_receipts
+                                        SET total_amount = ?
+                                        WHERE receipt_id = ?
+                                        """,
+                                        (
+                                            new_receipt_total or 0,
+                                            receipt_id
+                                        )
+                                    )
+
+                                    conn.commit()
+
+                                    st.session_state[confirm_key] = False
+                                    st.success("Receipt item removed!")
+                                    st.rerun()
+
+                                except Exception as e:
+                                    conn.rollback()
+                                    st.error(
+                                        f"Could not remove item: {e}"
+                                    )
+
+                        with col2:
+                            if st.button(
+                                "Cancel",
+                                key=f"cancel_remove_{receipt_id}_{item_id}"
+                            ):
+                                st.session_state[confirm_key] = False
+                                st.rerun()
+
+            else:
+                st.info(
+                    "This receipt currently has no items."
                 )
-            if st.button(
-    "Save Changes",
-    key=f"save_{purchase['receipt_id']}_{item['item']}"
-     
 
-   
-    # Confirm before removing
-if st.button(
-    "Remove Item",
-    key=f"remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
-):
-    st.session_state[
-        f"confirm_remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
-    ] = True
+            # Add another item to this receipt
+            st.divider()
+            st.subheader("Add Item to Receipt")
 
+            search_term = st.text_input(
+                "Search inventory",
+                placeholder="Type a product name...",
+                key=f"add_search_{receipt_id}"
+            )
 
-if st.session_state.get(
-    f"confirm_remove_{purchase['receipt_id']}_{item['purchase_item_id']}",
-    False
-):
+            if search_term:
 
-    st.warning(
-        f"Remove {item['quantity_purchased']} × "
-        f"{item['item']} from this receipt?"
-    )
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button(
-            "Yes, remove",
-            key=f"confirm_yes_{purchase['receipt_id']}_{item['purchase_item_id']}"
-        ):
-
-            try:
-                # Check current inventory
-                current_stock = conn.execute(
+                matching_items = conn.execute(
                     """
-                    SELECT quantity
+                    SELECT id, item
                     FROM inventory
-                    WHERE id = ?
+                    WHERE item LIKE ?
+                    ORDER BY item
                     """,
-                    (item["inventory_id"],)
-                ).fetchone()
+                    (f"%{search_term}%",)
+                ).fetchall()
 
-                if current_stock is None:
-                    st.error("Inventory item no longer exists.")
-                    st.stop()
+                if matching_items:
 
-                current_quantity = current_stock["quantity"] or 0
+                    item_options = {
+                        row["item"]: row["id"]
+                        for row in matching_items
+                    }
 
-                # Make sure we don't create negative stock
-                if current_quantity < item["quantity_purchased"]:
-                    st.error(
-                        f"Cannot remove this purchase because current "
-                        f"stock is only {current_quantity}, while this "
-                        f"receipt added {item['quantity_purchased']}."
+                    selected_item_name = st.selectbox(
+                        "Select product",
+                        options=list(item_options.keys()),
+                        key=f"add_item_{receipt_id}"
                     )
-                    st.stop()
 
-                # Start transaction
-                conn.execute("BEGIN")
+                    selected_inventory_id = item_options[
+                        selected_item_name
+                    ]
 
-                # 1. Remove purchased quantity from inventory
-                conn.execute(
-                    """
-                    UPDATE inventory
-                    SET quantity = quantity - ?
-                    WHERE id = ?
-                    """,
-                    (
-                        item["quantity_purchased"],
-                        item["inventory_id"]
+                    add_quantity = st.number_input(
+                        "Quantity to add",
+                        min_value=1,
+                        step=1,
+                        key=f"add_qty_{receipt_id}"
                     )
-                )
 
-                # 2. Delete purchase line
-                conn.execute(
-                    """
-                    DELETE FROM purchase_items
-                    WHERE purchase_item_id = ?
-                    """,
-                    (item["purchase_item_id"],)
-                )
-
-                # 3. Recalculate receipt total
-                new_receipt_total = conn.execute(
-                    """
-                    SELECT SUM(total_cost)
-                    FROM purchase_items
-                    WHERE receipt_id = ?
-                    """,
-                    (purchase["receipt_id"],)
-                ).fetchone()[0]
-
-                # 4. Update receipt total
-                conn.execute(
-                    """
-                    UPDATE purchase_receipts
-                    SET total_amount = ?
-                    WHERE receipt_id = ?
-                    """,
-                    (
-                        new_receipt_total or 0,
-                        purchase["receipt_id"]
+                    add_unit_cost = st.number_input(
+                        "Unit buying price (KSh)",
+                        min_value=0.0,
+                        step=0.01,
+                        key=f"add_cost_{receipt_id}"
                     )
-                )
 
-                conn.commit()
+                    add_total = add_quantity * add_unit_cost
 
-                # Clear confirmation state
-                st.session_state[
-                    f"confirm_remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
-                ] = False
+                    st.write(
+                        f"Item total: KSh {add_total:,.2f}"
+                    )
 
-                st.success(
-                    f"{item['item']} removed successfully."
-                )
+                    if st.button(
+                        "Add Item to Receipt",
+                        key=f"add_button_{receipt_id}"
+                    ):
 
-                st.rerun()
+                        try:
+                            conn.execute("BEGIN")
 
-            except Exception as e:
+                            conn.execute(
+                                """
+                                INSERT INTO purchase_items
+                                (
+                                    receipt_id,
+                                    inventory_id,
+                                    quantity_purchased,
+                                    unit_cost,
+                                    total_cost
+                                )
+                                VALUES (?, ?, ?, ?, ?)
+                                """,
+                                (
+                                    receipt_id,
+                                    selected_inventory_id,
+                                    add_quantity,
+                                    add_unit_cost,
+                                    add_total
+                                )
+                            )
 
-                conn.rollback()
+                            conn.execute(
+                                """
+                                UPDATE inventory
+                                SET quantity =
+                                    COALESCE(quantity, 0) + ?
+                                WHERE id = ?
+                                """,
+                                (
+                                    add_quantity,
+                                    selected_inventory_id
+                                )
+                            )
 
-                st.error(
-                    f"Could not remove item: {e}"
-                )
+                            new_receipt_total = conn.execute(
+                                """
+                                SELECT SUM(total_cost)
+                                FROM purchase_items
+                                WHERE receipt_id = ?
+                                """,
+                                (receipt_id,)
+                            ).fetchone()[0]
 
-    with col2:
-        if st.button(
-            "Cancel",
-            key=f"cancel_remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
-        ):
-            st.session_state[
-                f"confirm_remove_{purchase['receipt_id']}_{item['purchase_item_id']}"
-            ] = False
+                            conn.execute(
+                                """
+                                UPDATE purchase_receipts
+                                SET total_amount = ?
+                                WHERE receipt_id = ?
+                                """,
+                                (
+                                    new_receipt_total or 0,
+                                    receipt_id
+                                )
+                            )
 
-            st.rerun()
+                            conn.commit()
 
-    try:
-        conn.execute("BEGIN")
+                            st.success(
+                                f"{selected_item_name} added to "
+                                f"Receipt #{receipt_id}."
+                            )
+                            st.rerun()
 
-        # 1. Remove the purchased quantity from inventory
-        conn.execute(
-            """
-            UPDATE inventory
-            SET quantity = COALESCE(quantity, 0) - ?
-            WHERE id = ?
-            """,
-            (
-                item["quantity_purchased"],
-                item["inventory_id"]
-            )
-        )
+                        except Exception as e:
+                            conn.rollback()
+                            st.error(
+                                f"Could not add item: {e}"
+                            )
 
-        # 2. Delete the purchase line
-        conn.execute(
-            """
-            DELETE FROM purchase_items
-            WHERE purchase_item_id = ?
-            """,
-            (item["purchase_item_id"],)
-        )
+                else:
+                    st.warning("No matching inventory items found.")
 
-        # 3. Recalculate the receipt total
-        new_receipt_total = conn.execute(
-            """
-            SELECT SUM(total_cost)
-            FROM purchase_items
-            WHERE receipt_id = ?
-            """,
-            (purchase["receipt_id"],)
-        ).fetchone()[0]
-
-        # 4. Update the receipt total
-        conn.execute(
-            """
-            UPDATE purchase_receipts
-            SET total_amount = ?
-            WHERE receipt_id = ?
-            """,
-            (
-                new_receipt_total or 0,
-                purchase["receipt_id"]
-            )
-        )
-
-        conn.commit()
-
-        st.success(
-            f"{item['item']} removed from Receipt "
-            f"#{purchase['receipt_id']}."
-        )
-
-        st.rerun()
-
-    except Exception as e:
-
-        conn.rollback()
-
-        st.error(
-            f"Could not remove item: {e}"
-        )
-):
-
-    old_quantity = item["quantity_purchased"]
-
-    quantity_difference = new_quantity - old_quantity
-
-    try:
-        # Start transaction
-        conn.execute("BEGIN")
-
-        # 1. Update the purchased quantity
-        conn.execute(
-            """
-            UPDATE purchase_items
-            SET quantity_purchased = ?,
-                unit_cost = ?,
-                total_cost = ?
-            WHERE purchase_item_id = ?
-            """,
-            (
-                new_quantity,
-                new_unit_cost,
-                new_total,
-                item["purchase_item_id"]
-            )
-        )
-
-        # 2. Adjust inventory
-        conn.execute(
-            """
-            UPDATE inventory
-            SET quantity = COALESCE(quantity, 0) + ?
-            WHERE item = ?
-            """,
-            (
-                quantity_difference,
-                item["inventory_id"]
-            )
-        )
-
-        # 3. Recalculate the receipt total
-        new_receipt_total = conn.execute(
-            """
-            SELECT SUM(total_cost)
-            FROM purchase_items
-            WHERE receipt_id = ?
-            """,
-            (purchase["receipt_id"],)
-        ).fetchone()[0]
-
-        # 4. Update receipt total
-        conn.execute(
-            """
-            UPDATE purchase_receipts
-            SET total_amount = ?
-            WHERE receipt_id = ?
-            """,
-            (
-                new_receipt_total or 0,
-                purchase["receipt_id"]
-            )
-        )
-
-        # Save everything
-        conn.commit()
-
-        st.success(
-            f"Receipt #{purchase['receipt_id']} updated successfully!"
-        )
-
-        st.rerun()
-
-    except Exception as e:
-
-        conn.rollback()
-
-        st.error(
-            f"Could not update receipt: {e}"
-        )
 else:
     st.info("No purchases have been recorded yet.")
+
+
+
 st.header("Inventory")
 
 inventory_items = conn.execute(
