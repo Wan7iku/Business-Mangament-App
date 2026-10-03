@@ -700,6 +700,118 @@ if inventory_items:
 else:
     st.info("No inventory items found.")
 
+st.subheader("Edit Product")
+
+# Load products from the inventory table
+products = conn.execute(
+    """
+    SELECT id, item, category, buying_price, selling_price
+    FROM inventory
+    ORDER BY item
+    """
+).fetchall()
+
+if products:
+
+    # Show product names to the user, but retain their IDs internally
+    product_options = {
+        product["item"]: product["id"]
+        for product in products
+    }
+
+    selected_product_name = st.selectbox(
+        "Select product to edit",
+        options=list(product_options.keys()),
+        key="edit_product_select"
+    )
+
+    selected_product_id = product_options[selected_product_name]
+
+    # Fetch the selected product's current details
+    selected_product = conn.execute(
+        """
+        SELECT id, item, category, buying_price, selling_price
+        FROM inventory
+        WHERE id = ?
+        """,
+        (selected_product_id,)
+    ).fetchone()
+
+    with st.form("edit_product_form"):
+
+        edited_name = st.text_input(
+            "Product name",
+            value=selected_product["item"]
+        )
+
+        edited_category = st.text_input(
+            "Category",
+            value=selected_product["category"] or ""
+        )
+
+        edited_buying_price = st.number_input(
+            "Buying price (KSh)",
+            min_value=0.0,
+            value=float(selected_product["buying_price"]),
+            step=0.01
+        )
+
+        edited_selling_price = st.number_input(
+            "Selling price (KSh)",
+            min_value=0.0,
+            value=float(selected_product["selling_price"]),
+            step=0.01
+        )
+
+        save_product = st.form_submit_button("Save Product Changes")
+
+        if save_product:
+
+            if not edited_name.strip():
+                st.error("Product name cannot be empty.")
+
+            else:
+                try:
+                    conn.execute(
+                        """
+                        UPDATE inventory
+                        SET item = ?,
+                            category = ?,
+                            buying_price = ?,
+                            selling_price = ?
+                        WHERE id = ?
+                        """,
+                        (
+                            edited_name.strip(),
+                            edited_category.strip(),
+                            edited_buying_price,
+                            edited_selling_price,
+                            selected_product_id
+                        )
+                    )
+
+                    conn.commit()
+
+                    st.success(
+                        f"{edited_name.strip()} updated successfully!"
+                    )
+
+                    st.rerun()
+
+                except Exception as e:
+                    conn.rollback()
+
+                    if "UNIQUE constraint failed" in str(e):
+                        st.error(
+                            "Another product already uses that name. "
+                            "Please enter a unique product name."
+                        )
+                    else:
+                        st.error(f"Could not update product: {e}")
+
+else:
+    st.info("There are no products available to edit.")
+
 st.subheader("Add New Product")
 
 with st.form("add_product_form"):
