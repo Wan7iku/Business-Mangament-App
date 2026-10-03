@@ -275,9 +275,7 @@ if purchases:
             if st.button(
     "Save Changes",
     key=f"save_{purchase['receipt_id']}_{item['item']}"
-     if st.button(
-        "Save Changes",
-        key=f"save_{purchase['receipt_id']}_{item['item']}"
+     
 
    
     # Confirm before removing
