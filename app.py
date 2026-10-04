@@ -880,4 +880,116 @@ with st.form("add_product_form"):
                     )
                 else:
                     st.error(f"Could not add product: {e}")
+st.header("New Sale")
+
+# Store sale items temporarily while building the sale
+if "sale_items" not in st.session_state:
+    st.session_state.sale_items = []
+
+sale_date = st.date_input(
+    "Sale date",
+    key="sale_date"
+)
+
+st.subheader("Add Sale Item")
+
+search_term = st.text_input(
+    "Search inventory item",
+    placeholder="Type an item name...",
+    key="sale_search"
+)
+
+if search_term:
+
+    items = conn.execute(
+        """
+        SELECT
+            id,
+            item,
+            category,
+            selling_price,
+            quantity
+        FROM inventory
+        WHERE item LIKE ?
+        ORDER BY item
+        """,
+        (f"%{search_term}%",)
+    ).fetchall()
+
+    if items:
+
+        item_options = {
+            item["item"]: item["id"]
+            for item in items
+        }
+
+        selected_item_name = st.selectbox(
+            "Select item",
+            options=list(item_options.keys()),
+            key="sale_item"
+        )
+
+        selected_inventory_id = item_options[selected_item_name]
+
+        # Get the selected product's details
+        selected_item = next(
+            item for item in items
+            if item["id"] == selected_inventory_id
+        )
+
+        current_stock = selected_item["quantity"] or 0
+        default_price = selected_item["selling_price"]
+
+        st.write(
+            f"Current stock: **{current_stock}**"
+        )
+
+        quantity_sold = st.number_input(
+            "Quantity sold",
+            min_value=1,
+            step=1,
+            key="sale_quantity"
+        )
+
+        unit_price = st.number_input(
+            "Actual selling price (KSh)",
+            min_value=0.0,
+            value=float(default_price),
+            step=0.01,
+            key="sale_unit_price"
+        )
+
+        item_total = quantity_sold * unit_price
+
+        st.write(
+            f"Item total: **KSh {item_total:,.2f}**"
+        )
+
+        if quantity_sold > current_stock:
+            st.error(
+                f"Not enough stock. Available stock: "
+                f"{current_stock}"
+            )
+
+        elif st.button(
+            "Add Item to Sale",
+            key="add_sale_item"
+        ):
+
+            st.session_state.sale_items.append({
+                "inventory_id": selected_inventory_id,
+                "item": selected_item_name,
+                "quantity": quantity_sold,
+                "unit_price": unit_price,
+                "total_price": item_total
+            })
+
+            st.success(
+                f"{selected_item_name} added to sale."
+            )
+
+    else:
+        st.warning(
+            "No matching inventory items found."
+        )
 conn.close()
