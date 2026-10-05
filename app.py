@@ -992,4 +992,43 @@ if search_term:
         st.warning(
             "No matching inventory items found."
         )
+# --------------------------------------------------
+# CURRENT SALE
+# --------------------------------------------------
+
+if st.session_state.sale_items:
+
+    st.divider()
+
+    st.subheader("Current Sale")
+
+    for index, item in enumerate(
+        st.session_state.sale_items
+    ):
+
+        st.write(
+            f"**{item['item']}** | "
+            f"Qty: {item['quantity']} | "
+            f"Unit price: KSh {item['unit_price']:,.2f} | "
+            f"Total: KSh {item['total_price']:,.2f}"
+        )
+
+        if st.button(
+            "Remove",
+            key=f"remove_sale_item_{index}"
+        ):
+
+            st.session_state.sale_items.pop(index)
+
+            st.rerun()
+
+    # Calculate total sale value
+    sale_total = sum(
+        item["total_price"]
+        for item in st.session_state.sale_items
+    )
+
+    st.subheader(
+        f"Sale Total: KSh {sale_total:,.2f}"
+    )
 conn.close()
