@@ -1031,4 +1031,123 @@ if st.session_state.sale_items:
     st.subheader(
         f"Sale Total: KSh {sale_total:,.2f}"
     )
+# --------------------------------------------------
+# SAVE SALE
+# --------------------------------------------------
+
+if st.session_state.sale_items:
+
+    sale_total = sum(
+        item["total_price"]
+        for item in st.session_state.sale_items
+    )
+
+    if st.button(
+        "Save Sale",
+        key="save_sale"
+    ):
+
+        try:
+            conn.execute("BEGIN")
+
+            # Check stock again before saving
+            for item in st.session_state.sale_items:
+
+                current_stock = conn.execute(
+                    """
+                    SELECT quantity
+                    FROM inventory
+                    WHERE id = ?
+                    """,
+                    (item["inventory_id"],)
+                ).fetchone()
+
+                if current_stock is None:
+                    raise Exception(
+                        f"Inventory item '{item['item']}' "
+                        f"no longer exists."
+                    )
+
+                available_stock = (
+                    current_stock["quantity"] or 0
+                )
+
+                if item["quantity"] > available_stock:
+                    raise Exception(
+                        f"Not enough stock for "
+                        f"{item['item']}. "
+                        f"Available: {available_stock}, "
+                        f"requested: {item['quantity']}."
+                    )
+
+            # Create the sale record
+            cursor = conn.execute(
+                """
+                INSERT INTO sales
+                (sale_date, total_amount)
+                VALUES (?, ?)
+                """,
+                (
+                    sale_date,
+                    sale_total
+                )
+            )
+
+            sale_id = cursor.lastrowid
+
+            # Save each sale item and deduct stock
+            for item in st.session_state.sale_items:
+
+                conn.execute(
+                    """
+                    INSERT INTO sale_items
+                    (
+                        sale_id,
+                        inventory_id,
+                        quantity_sold,
+                        unit_price,
+                        total_price
+                    )
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (
+                        sale_id,
+                        item["inventory_id"],
+                        item["quantity"],
+                        item["unit_price"],
+                        item["total_price"]
+                    )
+                )
+
+                conn.execute(
+                    """
+                    UPDATE inventory
+                    SET quantity =
+                        COALESCE(quantity, 0) - ?
+                    WHERE id = ?
+                    """,
+                    (
+                        item["quantity"],
+                        item["inventory_id"]
+                    )
+                )
+
+            conn.commit()
+
+            st.success(
+                f"Sale #{sale_id} saved successfully!"
+            )
+
+            # Clear the temporary sale
+            st.session_state.sale_items = []
+
+            st.rerun()
+
+        except Exception as e:
+
+            conn.rollback()
+
+            st.error(
+                f"Could not save sale: {e}"
+            )
 conn.close()
