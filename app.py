@@ -1150,4 +1150,76 @@ if st.session_state.sale_items:
             st.error(
                 f"Could not save sale: {e}"
             )
+# --------------------------------------------------
+# SALES HISTORY
+# --------------------------------------------------
+
+st.header("Sales History")
+
+sales = conn.execute(
+    """
+    SELECT
+        sale_id,
+        sale_date,
+        total_amount
+    FROM sales
+    ORDER BY sale_date DESC, sale_id DESC
+    """
+).fetchall()
+
+if sales:
+
+    for sale in sales:
+
+        with st.expander(
+            f"Sale #{sale['sale_id']} | "
+            f"{sale['sale_date']} | "
+            f"KSh {sale['total_amount']:,.2f}"
+        ):
+
+            sale_items = conn.execute(
+                """
+                SELECT
+                    si.sale_item_id,
+                    i.item,
+                    si.quantity_sold,
+                    si.unit_price,
+                    si.total_price
+                FROM sale_items si
+                JOIN inventory i
+                    ON si.inventory_id = i.id
+                WHERE si.sale_id = ?
+                ORDER BY si.sale_item_id
+                """,
+                (sale["sale_id"],)
+            ).fetchall()
+
+            if sale_items:
+
+                for item in sale_items:
+
+                    st.write(
+                        f"**{item['item']}** | "
+                        f"Qty: {item['quantity_sold']} | "
+                        f"Unit price: "
+                        f"KSh {item['unit_price']:,.2f} | "
+                        f"Total: "
+                        f"KSh {item['total_price']:,.2f}"
+                    )
+
+                st.divider()
+
+                st.write(
+                    f"**Sale Total: "
+                    f"KSh {sale['total_amount']:,.2f}**"
+                )
+
+            else:
+                st.info(
+                    "This sale currently has no recorded items."
+                )
+
+else:
+
+    st.info("No sales have been recorded yet.")
 conn.close()
