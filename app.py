@@ -891,6 +891,19 @@ sale_date = st.date_input(
     key="sale_date"
 )
 
+payment_method = st.selectbox(
+    "Payment method",
+    options=["Cash", "M-Pesa", "Bank Transfer", "Credit"],
+    key="sale_payment_method"
+)
+
+amount_paid = st.number_input(
+    "Amount paid (KSh)",
+    min_value=0.0,
+    step=1.0,
+    key="sale_amount_paid"
+)
+
 st.subheader("Add Sale Item")
 
 search_term = st.text_input(
