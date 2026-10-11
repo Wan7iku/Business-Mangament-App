@@ -1097,15 +1097,17 @@ if st.session_state.sale_items:
             cursor = conn.execute(
                 """
                 INSERT INTO sales
-                (sale_date, total_amount)
-                VALUES (?, ?)
+                (sale_date, total_amount, payment_method, amount_paid)
+                VALUES (?, ?, ?, ?)
                 """,
                 (
                     sale_date,
-                    sale_total
+                    sale_total,
+                    payment_method,
+                    amount_paid
                 )
             )
-
+            
             sale_id = cursor.lastrowid
 
             # Save each sale item and deduct stock
