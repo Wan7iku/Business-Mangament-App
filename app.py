@@ -1061,102 +1061,88 @@ if st.session_state.sale_items:
     ):
 
         try:
-            conn.execute("BEGIN")
+            if amount_paid > sale_total:
+                st.error("Amount paid cannot exceed the sale total.")
+            elif payment_method != "Credit" and amount_paid < sale_total:
+                st.error("For partial payments, select Credit as the payment method.")
+            else:
+                conn.execute("BEGIN")
 
-            # Check stock again before saving
-            for item in st.session_state.sale_items:
+                # Check stock again before saving
+                for item in st.session_state.sale_items:
+                    current_stock = conn.execute(
+                        """
+                        SELECT quantity
+                        FROM inventory
+                        WHERE id = ?
+                        """,
+                        (item["inventory_id"],),
+                    ).fetchone()
 
-                current_stock = conn.execute(
+                    if current_stock is None:
+                        raise Exception(
+                            f"Inventory item '{item['item']}' no longer exists."
+                        )
+
+                    available_stock = current_stock["quantity"] or 0
+
+                    if item["quantity"] > available_stock:
+                        raise Exception(
+                            f"Not enough stock for {item['item']}. "
+                            f"Available: {available_stock}, requested: {item['quantity']}."
+                        )
+
+                # Create the sale record
+                cursor = conn.execute(
                     """
-                    SELECT quantity
-                    FROM inventory
-                    WHERE id = ?
+                    INSERT INTO sales (sale_date, total_amount, payment_method, amount_paid)
+                    VALUES (?, ?, ?, ?)
                     """,
-                    (item["inventory_id"],)
-                ).fetchone()
-
-                if current_stock is None:
-                    raise Exception(
-                        f"Inventory item '{item['item']}' "
-                        f"no longer exists."
-                    )
-
-                available_stock = (
-                    current_stock["quantity"] or 0
+                    (sale_date, sale_total, payment_method, amount_paid),
                 )
 
-                if item["quantity"] > available_stock:
-                    raise Exception(
-                        f"Not enough stock for "
-                        f"{item['item']}. "
-                        f"Available: {available_stock}, "
-                        f"requested: {item['quantity']}."
+                sale_id = cursor.lastrowid
+
+                # Save each sale item and deduct stock
+                for item in st.session_state.sale_items:
+                    conn.execute(
+                        """
+                        INSERT INTO sale_items
+                        (
+                            sale_id,
+                            inventory_id,
+                            quantity_sold,
+                            unit_price,
+                            total_price
+                        )
+                        VALUES (?, ?, ?, ?, ?)
+                        """,
+                        (
+                            sale_id,
+                            item["inventory_id"],
+                            item["quantity"],
+                            item["unit_price"],
+                            item["total_price"],
+                        ),
                     )
 
-            # Create the sale record
-            cursor = conn.execute(
-                """
-                INSERT INTO sales
-                (sale_date, total_amount, payment_method, amount_paid)
-                VALUES (?, ?, ?, ?)
-                """,
-                (
-                    sale_date,
-                    sale_total,
-                    payment_method,
-                    amount_paid
-                )
-            )
-            
-            sale_id = cursor.lastrowid
-
-            # Save each sale item and deduct stock
-            for item in st.session_state.sale_items:
-
-                conn.execute(
-                    """
-                    INSERT INTO sale_items
-                    (
-                        sale_id,
-                        inventory_id,
-                        quantity_sold,
-                        unit_price,
-                        total_price
+                    conn.execute(
+                        """
+                        UPDATE inventory
+                        SET quantity = COALESCE(quantity, 0) - ?
+                        WHERE id = ?
+                        """,
+                        (item["quantity"], item["inventory_id"]),
                     )
-                    VALUES (?, ?, ?, ?, ?)
-                    """,
-                    (
-                        sale_id,
-                        item["inventory_id"],
-                        item["quantity"],
-                        item["unit_price"],
-                        item["total_price"]
-                    )
-                )
 
-                conn.execute(
-                    """
-                    UPDATE inventory
-                    SET quantity =
-                        COALESCE(quantity, 0) - ?
-                    WHERE id = ?
-                    """,
-                    (
-                        item["quantity"],
-                        item["inventory_id"]
-                    )
-                )
+                conn.commit()
 
-            conn.commit()
+                st.success(f"Sale #{sale_id} saved successfully!")
 
-            st.success(
-                f"Sale #{sale_id} saved successfully!"
-            )
+                # Clear the temporary sale
+                st.session_state.sale_items = []
 
-            # Clear the temporary sale
-            st.session_state.sale_items = []
-
-            st.rerun()
+                st.rerun()
 
         except Exception as e:
 
@@ -1171,12 +1157,15 @@ if st.session_state.sale_items:
 
 st.header("Sales History")
 
-sales = conn.execute(
+sales =conn.execute(
     """
     SELECT
         sale_id,
         sale_date,
-        total_amount
+        total_amount,
+        payment_method,
+        amount_paid,
+        total_amount - amount_paid AS balance
     FROM sales
     ORDER BY sale_date DESC, sale_id DESC
     """
@@ -1191,7 +1180,9 @@ if sales:
             f"{sale['sale_date']} | "
             f"KSh {sale['total_amount']:,.2f}"
         ):
-
+            st.write(f"**Payment method:** {sale['payment_method']}")
+            st.write(f"**Amount paid:** KSh {sale['amount_paid']:,.2f}")
+            st.write(f"**Outstanding balance:** KSh {sale['balance']:,.2f}")
             sale_items = conn.execute(
                 """
                 SELECT
