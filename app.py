@@ -1228,4 +1228,162 @@ if sales:
 else:
 
     st.info("No sales have been recorded yet.")
+
+# --------------------------------------------------
+# CUSTOMER PAYMENT COLLECTIONS
+# --------------------------------------------------
+
+st.header("Collect Customer Payment")
+
+unpaid_sales = conn.execute(
+    """
+    SELECT
+        sale_id,
+        sale_date,
+        total_amount,
+        amount_paid,
+        payment_method,
+        total_amount - amount_paid AS balance
+    FROM sales
+    WHERE amount_paid < total_amount
+    ORDER BY sale_date DESC, sale_id DESC
+    """
+).fetchall()
+
+if unpaid_sales:
+
+    sale_options = {
+        (
+            f"Sale #{sale['sale_id']} | "
+            f"{sale['sale_date']} | "
+            f"Balance: KSh {sale['balance']:,.2f}"
+        ): sale["sale_id"]
+        for sale in unpaid_sales
+    }
+
+    selected_sale_label = st.selectbox(
+        "Select sale with an outstanding balance",
+        options=list(sale_options.keys()),
+        key="collection_sale"
+    )
+
+    selected_sale_id = sale_options[selected_sale_label]
+
+    selected_sale = conn.execute(
+        """
+        SELECT
+            sale_id,
+            total_amount,
+            amount_paid,
+            payment_method
+        FROM sales
+        WHERE sale_id = ?
+        """,
+        (selected_sale_id,)
+    ).fetchone()
+
+    outstanding_balance = (
+        selected_sale["total_amount"]
+        - selected_sale["amount_paid"]
+    )
+
+    st.write(
+        f"**Original sale total:** "
+        f"KSh {selected_sale['total_amount']:,.2f}"
+    )
+
+    st.write(
+        f"**Already paid:** "
+        f"KSh {selected_sale['amount_paid']:,.2f}"
+    )
+
+    st.write(
+        f"**Outstanding balance:** "
+        f"KSh {outstanding_balance:,.2f}"
+    )
+
+    collection_method = st.selectbox(
+        "Payment received through",
+        options=["Cash", "M-Pesa", "Bank Transfer"],
+        key="collection_method"
+    )
+
+    collection_amount = st.number_input(
+        "Amount received (KSh)",
+        min_value=0.0,
+        max_value=float(outstanding_balance),
+        step=1.0,
+        key="collection_amount"
+    )
+
+    if st.button(
+        "Record Payment",
+        key="record_customer_payment"
+    ):
+
+        if collection_amount <= 0:
+            st.error("Enter an amount greater than zero.")
+
+        else:
+
+            try:
+                conn.execute("BEGIN")
+
+                # Recheck the latest balance
+                latest_sale = conn.execute(
+                    """
+                    SELECT total_amount, amount_paid
+                    FROM sales
+                    WHERE sale_id = ?
+                    """,
+                    (selected_sale_id,)
+                ).fetchone()
+
+                latest_balance = (
+                    latest_sale["total_amount"]
+                    - latest_sale["amount_paid"]
+                )
+
+                if collection_amount > latest_balance:
+                    raise ValueError(
+                        "The payment exceeds the remaining balance. "
+                        "Refresh and try again."
+                    )
+
+                updated_amount_paid = (
+                    latest_sale["amount_paid"]
+                    + collection_amount
+                )
+
+                conn.execute(
+                    """
+                    UPDATE sales
+                    SET amount_paid = ?,
+                        payment_method = ?
+                    WHERE sale_id = ?
+                    """,
+                    (
+                        updated_amount_paid,
+                        collection_method,
+                        selected_sale_id
+                    )
+                )
+
+                conn.commit()
+
+                st.success(
+                    f"Payment of KSh {collection_amount:,.2f} "
+                    f"recorded for Sale #{selected_sale_id}."
+                )
+
+                st.rerun()
+
+            except Exception as e:
+                conn.rollback()
+                st.error(
+                    f"Could not record payment: {e}"
+                )
+
+else:
+    st.info("There are no outstanding customer balances.")
 conn.close()
