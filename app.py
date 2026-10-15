@@ -1,5 +1,7 @@
 import streamlit as st
-from database import get_connection
+from database import get_connection,init_db
+#initialize the databse
+init_db()
 
 st.title("Business Management App")
 
