@@ -1120,14 +1120,11 @@ if st.session_state.sale_items:
                         )
                         VALUES (?, ?, ?, ?, ?)
                         """,
-                        (
-                            sale_id,
+                        ( sale_id,
                             item["inventory_id"],
                             item["quantity"],
                             item["unit_price"],
-                            item["total_price"],
-                        ),
-                    )
+                            item["total_price"],),)
 
                     conn.execute(
                         """
