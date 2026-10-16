@@ -1103,6 +1103,7 @@ if st.session_state.sale_items:
                     (sale_date, sale_total, payment_method, amount_paid),
                 )
 
+
                 sale_id = cursor.lastrowid
 
                 # Save each sale item and deduct stock
@@ -1254,20 +1255,16 @@ unpaid_sales = conn.execute(
 
 if unpaid_sales:
 
-    sale_options = {
-        (
+    sale_options = { (
             f"Sale #{sale['sale_id']} | "
             f"{sale['sale_date']} | "
-            f"Balance: KSh {sale['balance']:,.2f}"
-        ): sale["sale_id"]
-        for sale in unpaid_sales
-    }
+            f"Balance: KSh {sale['balance']:,.2f}"): sale["sale_id"]
+        for sale in unpaid_sales }
 
     selected_sale_label = st.selectbox(
         "Select sale with an outstanding balance",
         options=list(sale_options.keys()),
-        key="collection_sale"
-    )
+        key="collection_sale" )
 
     selected_sale_id = sale_options[selected_sale_label]
 
