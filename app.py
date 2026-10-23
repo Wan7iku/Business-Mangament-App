@@ -1099,10 +1099,7 @@ if st.session_state.sale_items:
                     """
                     INSERT INTO sales (sale_date, total_amount, payment_method, amount_paid)
                     VALUES (?, ?, ?, ?)
-                    """,
-                    (sale_date, sale_total, payment_method, amount_paid),
-                )
-
+                    """,(sale_date, sale_total, payment_method, amount_paid),)
 
                 sale_id = cursor.lastrowid
 
@@ -1111,29 +1108,15 @@ if st.session_state.sale_items:
                     conn.execute(
                         """
                         INSERT INTO sale_items
-                        (
-                            sale_id,
-                            inventory_id,
-                            quantity_sold,
-                            unit_price,
-                            total_price
-                        )
-                        VALUES (?, ?, ?, ?, ?)
-                        """,
-                        ( sale_id,
-                            item["inventory_id"],
-                            item["quantity"],
-                            item["unit_price"],
-                            item["total_price"],),)
+                        (sale_id,inventory_id,quantity_sold,unit_price,total_price )VALUES (?, ?, ?, ?, ?)""",
+                        ( sale_id,item["inventory_id"],item["quantity"],item["unit_price"],item["total_price"],),)
 
                     conn.execute(
                         """
                         UPDATE inventory
                         SET quantity = COALESCE(quantity, 0) - ?
                         WHERE id = ?
-                        """,
-                        (item["quantity"], item["inventory_id"]),
-                    )
+                        """,(item["quantity"], item["inventory_id"]),)
 
                 conn.commit()
 
@@ -1364,6 +1347,17 @@ if unpaid_sales:
                         selected_sale_id
                     )
                 )
+
+                # Record this individual payment in the ledger
+                conn.execute(
+                    """
+                    INSERT INTO payments (
+                        sale_id,
+                        amount,
+                        payment_method)VALUES (?, ?, ?)""",
+                    (selected_sale_id,collection_amount,collection_method)
+                )
+
 
                 conn.commit()
 
