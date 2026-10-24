@@ -89,14 +89,17 @@ unit_cost = st.number_input(
 total_cost = quantity_purchased * unit_cost
 
 st.write(f"Total cost: KSh {total_cost:,.2f}")
-if st.button("Add Item"):
-    st.session_state.purchase_items.append({
-        "inventory_id": inventory_id,
-        "item": selected_item,
-        "quantity": quantity_purchased,
-        "unit_cost": unit_cost,
-        "total_cost": total_cost
-    })    
+
+if st.session_state.purchase_items:
+    st.subheader("Items on this receipt")
+
+    for item in st.session_state.purchase_items:
+        st.write(
+            f"**{item['item']}** | "
+            f"Quantity: {item['quantity']} | "
+            f"Unit cost: KSh {item['unit_cost']:,.2f} | "
+            f"Total: KSh {item['total_cost']:,.2f}")
+           
 if st.session_state.purchase_items:
     st.subheader("Items on this receipt")
 
