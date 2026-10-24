@@ -56,7 +56,6 @@ if search_term:
         (f"%{search_term}%",)
     ).fetchall()
 
-    conn.close()
 
     if items:
         item_options = {
@@ -100,42 +99,6 @@ if st.session_state.purchase_items:
             f"Unit cost: KSh {item['unit_cost']:,.2f} | "
             f"Total: KSh {item['total_cost']:,.2f}")
            
-if st.session_state.purchase_items:
-    st.subheader("Items on this receipt")
-
-    for item in items:
-
-     st.write(f"**{item['item']}**")
-
-     new_quantity = st.number_input(
-        "Quantity",
-        min_value=1,
-        value=item["quantity_purchased"],
-        step=1,
-        key=f"qty_{purchase['receipt_id']}_{item['item']}"
-     )
-
-     new_unit_cost = st.number_input(
-       "Unit buying price",
-        min_value=0.0,
-        value=float(item["unit_cost"]),
-        step=0.01,
-        key=f"cost_{purchase['receipt_id']}_{item['purchase_item_id']}"
-     )
-
-     new_total = new_quantity * new_unit_cost
-
-     st.write(
-        f"New total: KSh {new_total:,.2f}"
-     )
-    receipt_total = sum(
-        item["total_cost"]
-        for item in st.session_state.purchase_items
-    )
-
-    st.subheader(
-        f"Receipt Total: KSh {receipt_total:,.2f}"
-    )  
 if st.session_state.purchase_items:
 
     receipt_total = sum(
@@ -216,14 +179,11 @@ if st.session_state.purchase_items:
 
             # Clear the temporary purchase
             st.session_state.purchase_items = []
-
         except Exception as e:
             # Undo everything if something goes wrong
             conn.rollback()
 
-            st.error(
-                f"Could not save receipt: {e}"
-            )
+            st.error(f"Could not save receipt: {e}")
 
 
 st.header("Purchase History")
@@ -849,6 +809,7 @@ with st.form("add_product_form"):
 
         if not new_item.strip():
             st.error("Please enter a product name.")
+
 
         else:
             try:
