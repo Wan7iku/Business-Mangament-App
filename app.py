@@ -1103,6 +1103,13 @@ if st.session_state.sale_items:
 
                 sale_id = cursor.lastrowid
 
+                if amount_paid > 0:
+                    conn.execute(
+                        """
+                        INSERT INTO payments (sale_id, amount, payment_method)
+                        VALUES (?, ?, ?)""",
+                        (sale_id, amount_paid, payment_method))
+
                 # Save each sale item and deduct stock
                 for item in st.session_state.sale_items:
                     conn.execute(
@@ -1376,4 +1383,46 @@ if unpaid_sales:
 
 else:
     st.info("There are no outstanding customer balances.")
+
+
+# STEP 18: Payment History
+st.header("Payment History")
+
+payments = conn.execute(
+    """
+    SELECT
+        p.payment_id,
+        p.payment_date,
+        p.sale_id,
+        s.sale_date,
+        p.amount,
+        p.payment_method,
+        p.reference
+    FROM payments AS p
+    LEFT JOIN sales AS s
+        ON p.sale_id = s.sale_id
+    ORDER BY p.payment_date DESC, p.payment_id DESC
+    """
+).fetchall()
+
+if payments:
+    payment_records = [dict(payment) for payment in payments]
+
+    st.dataframe(
+        payment_records,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    total_collected = sum(
+        payment["amount"] for payment in payments
+    )
+
+    st.metric(
+        "Total payments recorded",
+        f"KSh {total_collected:,.2f}"
+    )
+else:
+    st.info("No payment records have been recorded yet.")
+
 conn.close()
