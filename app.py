@@ -173,9 +173,7 @@ if st.session_state.purchase_items:
             # Save everything
             conn.commit()
 
-            st.success(
-                f"Receipt #{receipt_id} saved successfully!"
-            )
+            st.success(f"Receipt #{receipt_id} saved successfully!" )
 
             # Clear the temporary purchase
             st.session_state.purchase_items = []
