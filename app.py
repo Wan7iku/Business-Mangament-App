@@ -44,8 +44,6 @@ search_term = st.text_input(
 )
 
 if search_term:
-    conn = get_connection()
-
     items = conn.execute(
         """
         SELECT id, item, category
@@ -55,7 +53,6 @@ if search_term:
         """,
         (f"%{search_term}%",)
     ).fetchall()
-
 
     if items:
         item_options = {
@@ -70,24 +67,37 @@ if search_term:
 
         inventory_id = item_options[selected_item]
 
-        st.write("Selected:", selected_item)
+        quantity_purchased = st.number_input(
+            "Quantity purchased",
+            min_value=1,
+            step=1
+        )
+
+        unit_cost = st.number_input(
+            "Unit buying price",
+            min_value=0.0,
+            step=0.01
+        )
+
+        total_cost = quantity_purchased * unit_cost
+
+        st.write(f"Total cost: KSh {total_cost:,.2f}")
+
+        if st.button("Add Item"):
+            st.session_state.purchase_items.append({
+                "inventory_id": inventory_id,
+                "item": selected_item,
+                "quantity": quantity_purchased,
+                "unit_cost": unit_cost,
+                "total_cost": total_cost
+            })
+
+            st.success(f"{selected_item} added to this receipt.")
+            st.rerun()
+
     else:
         st.warning("No matching inventory items found.")
-quantity_purchased = st.number_input(
-    "Quantity purchased",
-    min_value=1,
-    step=1
-)
 
-unit_cost = st.number_input(
-    "Unit buying price",
-    min_value=0.0,
-    step=0.01
-)
-
-total_cost = quantity_purchased * unit_cost
-
-st.write(f"Total cost: KSh {total_cost:,.2f}")
 
 if st.session_state.purchase_items:
     st.subheader("Items on this receipt")
