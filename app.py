@@ -1397,4 +1397,76 @@ if payments:
 else:
     st.info("No payment records have been recorded yet.")
 
+# OPERATIONAL EXPENSES
+st.divider()
+st.header("Operational Expenses")
+
+with st.form("expense_form"):
+    expense_date = st.date_input("Expense Date")
+
+    expense_category = st.selectbox(
+        "Expense Category",
+        [
+            "Utilities",
+            "Transport",
+            "Stationery",
+            "Rent",
+            "Salaries",
+            "Repairs and Maintenance",
+            "Other"
+        ]
+    )
+
+    expense_description = st.text_input(
+        "Description",
+        placeholder="e.g. Electricity bill"
+    )
+
+    expense_amount = st.number_input(
+        "Amount (KSh)",
+        min_value=0.0,
+        step=100.0
+    )
+
+    expense_payment_method = st.selectbox(
+        "Payment Method",
+        ["Cash", "M-Pesa", "Bank Transfer", "Other"]
+    )
+
+    expense_reference = st.text_input(
+        "Receipt or Transaction Reference (optional)"
+    )
+
+    submit_expense = st.form_submit_button("Save Expense")
+
+    if submit_expense:
+        if expense_amount <= 0:
+            st.error("Expense amount must be greater than zero.")
+        else:
+            conn.execute(
+                """
+                INSERT INTO expenses (
+                    expense_date,
+                    category,
+                    description,
+                    amount,
+                    payment_method,
+                    reference
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    expense_date.isoformat(),
+                    expense_category,
+                    expense_description,
+                    expense_amount,
+                    expense_payment_method,
+                    expense_reference
+                )
+            )
+            conn.commit()
+            st.success("Operational expense recorded successfully!")
+            st.rerun()
+
+
 conn.close()
