@@ -1466,7 +1466,4 @@ with st.form("expense_form"):
             )
             conn.commit()
             st.success("Operational expense recorded successfully!")
-            st.rerun()
-
-
 conn.close()
