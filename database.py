@@ -22,6 +22,18 @@ def init_db():
             FOREIGN KEY (sale_id) REFERENCES sales(sale_id)
         )
     """)
+    
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS expenses (
+            expense_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            expense_date TEXT NOT NULL,
+            category TEXT NOT NULL,
+            description TEXT,
+            amount REAL NOT NULL CHECK (amount > 0),
+            payment_method TEXT NOT NULL,
+            reference TEXT
+        )
+    """)
 
     conn.commit()
     conn.close()
