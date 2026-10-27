@@ -1466,4 +1466,65 @@ with st.form("expense_form"):
             )
             conn.commit()
             st.success("Operational expense recorded successfully!")
+
+# CHEAPEST SUPPLIER ANALYTICS
+st.divider()
+st.header("Cheapest Supplier by Product")
+
+if st.button("Run Supplier Analysis"):
+    supplier_analysis = conn.execute("""
+        WITH supplier_prices AS (
+            SELECT
+                i.id AS inventory_id,
+                i.item AS product,
+                s.supplier_id,
+                s.name AS supplier,
+                AVG(pi.unit_cost) AS average_unit_cost,
+                COUNT(*) AS purchase_records,
+                SUM(pi.quantity_purchased) AS total_units_purchased,
+                ROW_NUMBER() OVER (
+                    PARTITION BY i.id
+                    ORDER BY AVG(pi.unit_cost), s.supplier_id
+                ) AS supplier_rank
+            FROM purchase_items AS pi
+            JOIN purchase_receipts AS pr
+                ON pi.receipt_id = pr.receipt_id
+            JOIN suppliers AS s
+                ON pr.supplier_id = s.supplier_id
+            JOIN inventory AS i
+                ON pi.inventory_id = i.id
+            WHERE pi.unit_cost IS NOT NULL
+              AND pi.unit_cost > 0
+            GROUP BY
+                i.id,
+                i.item,
+                s.supplier_id,
+                s.name
+        )
+        SELECT
+            product AS Product,
+            supplier AS Supplier,
+            ROUND(average_unit_cost, 2) AS Average_Unit_Cost,
+            purchase_records AS Purchase_Records,
+            total_units_purchased AS Total_Units_Purchased
+        FROM supplier_prices
+        WHERE supplier_rank = 1
+        ORDER BY product
+    """).fetchall()
+
+    if supplier_analysis:
+        import pandas as pd
+
+        analysis_df = pd.DataFrame(
+            [dict(row) for row in supplier_analysis]
+        )
+
+        st.dataframe(
+            analysis_df,
+            use_container_width=True,
+            hide_index=True
+        )
+    else:
+        st.info("No purchase records are available for analysis.")
+
 conn.close()
