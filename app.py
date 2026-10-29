@@ -1530,4 +1530,83 @@ if st.button("Run Supplier Analysis"):
     else:
         st.info("No purchase records are available for analysis.")
 
+st.divider()
+st.header("📊 Units Sold by Product")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    start_date = st.date_input(
+        "Start date",
+        value=date.today().replace(day=1),
+        key="sales_start_date"
+    )
+
+with col2:
+    end_date = st.date_input(
+        "End date",
+        value=date.today(),
+        key="sales_end_date"
+    )
+
+if st.button("Run Sales Analysis", key="run_sales_analysis"):
+
+    if start_date > end_date:
+        st.error("Start date cannot be later than end date.")
+
+    else:
+        sales_analysis = conn.execute(
+            """
+            SELECT
+                i.item AS Product,
+                SUM(si.quantity_sold) AS Units_Sold,
+                ROUND(SUM(si.total_price), 2) AS Sales_Revenue
+            FROM sale_items AS si
+            JOIN sales AS s
+                ON si.sale_id = s.sale_id
+            JOIN inventory AS i
+                ON si.inventory_id = i.id
+            WHERE date(s.sale_date) >= date(?)
+              AND date(s.sale_date) < date(?, '+1 day')
+            GROUP BY
+                i.id,
+                i.item
+            ORDER BY
+                Units_Sold DESC
+            """,
+            (
+                start_date.isoformat(),
+                end_date.isoformat()
+            )
+        ).fetchall()
+
+        if sales_analysis:
+            st.dataframe(
+                [dict(row) for row in sales_analysis],
+                use_container_width=True,
+                hide_index=True
+            )
+
+            total_units = sum(
+                row["Units_Sold"] for row in sales_analysis
+            )
+
+            total_revenue = sum(
+                row["Sales_Revenue"] for row in sales_analysis
+            )
+
+            metric1, metric2 = st.columns(2)
+
+            metric1.metric("Total Units Sold", total_units)
+            metric2.metric(
+                "Sales Revenue",
+                f"KSh {total_revenue:,.2f}"
+            )
+
+        else:
+            st.info(
+                "No sales recorded for the selected date range."
+            )
+
+
 conn.close()
