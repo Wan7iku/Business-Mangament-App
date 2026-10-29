@@ -1586,6 +1586,14 @@ if st.button("Run Sales Analysis", key="run_sales_analysis"):
                 use_container_width=True,
                 hide_index=True
             )
+            
+            st.subheader("🏆 Top 5 Best-Selling Products")
+
+            top_products = sales_analysis[:5]
+
+            st.dataframe(
+              [dict(row) for row in top_products], use_container_width=True,hide_index=True)
+
 
             total_units = sum(
                 row["Units_Sold"] for row in sales_analysis
