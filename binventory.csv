@@ -1,4 +1,4 @@
-id,item,quantity,category,buying_price,selling_price
+  id,item,quantity,category,buying_price,selling_price
 1,Fenari 1L,2,Insecticide,3600,4000
 2,Fenari 500ml,4,Insecticide,1968,2100
 3,Fenari 250ml,0,Insecticide,1044,1200
@@ -273,6 +273,8 @@ id,item,quantity,category,buying_price,selling_price
 282,Bixam 1l, 5, Insecticide,3890,4300
 283, Bixam 100ml,5,Insecticide, 400,500
 284, Diamond v 200g , 3, supplement, 200,300
+285, Bixam 250ml,3,Insecticide, 760,1200
+
 
 
 
